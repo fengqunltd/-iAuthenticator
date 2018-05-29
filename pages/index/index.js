@@ -19,6 +19,18 @@ Page({
     // 是否显示“删除确认”弹窗
     show_del: false,
 
+    // 是否显示“添加”弹窗
+    show_add: false,
+
+    // “添加”弹窗账号名输入框是否获得焦点
+    focus_add: false,
+
+    // 正在添加的账号名
+    input_user: '',
+
+    // 正在添加的密钥
+    input_key: '',
+
     // 当前正在操作（长按）的谷歌验证码的用户名（user）
     cur_user: '',
 
@@ -53,17 +65,13 @@ Page({
   },
 
   // 微信扫码添加谷歌验证码
-  onscan: function () {
-    let _this = this
+  scan: function () {
     wx.scanCode({
       success: (res) => {
         // 如果扫码结果不符合谷歌验证码链接格式，正确格式如下：
         // otpauth://totp/user@host.com?secret=JBSWY3DPEHPK3PXP&issuer=host.com
         if (!/^otpauth:\/\/totp\//.test(res.result)) {
-          wx.showToast({
-            title: '未识别到有效二维码',
-            icon: 'none'
-          })
+          this.toast('未识别到有效二维码')
           return
         }
 
@@ -80,31 +88,58 @@ Page({
         //   confirmColor: '#4285f4'
         // })
 
-        // 将扫描得到的数据添加到页面上，并更新 localStorage
-        this.data.codes.push({
-          key: key,
-          code: GA.calcTOTP(key),
-          user: user
-        })
-
-        this.setData({
-          codes: this.data.codes
-        })
-
-        this.setStorage()
-
-        wx.showToast({
-          title: '身份验证器：密钥已保存',
-          icon: 'none'
-        })
+        this.addAccount(key, user)
       },
       fail: () => {
-        wx.showToast({
-          title: '扫码失败',
-          icon: 'none'
-        })
+        this.toast('扫码失败')
       }
     })
+  },
+
+  // 点击“添加”按钮，选择添加账号的方式
+  // 扫描条形码 or 输入提供的密钥
+  onadd: function () {
+    let _this = this
+    wx.showActionSheet({
+      itemList: ['扫描条形码', '输入提供的密钥'],
+      success: function (res) {
+        switch (res.tapIndex) {
+          case 0: _this.scan(); break;
+          case 1: _this.showAdd(); break;
+        }
+      },
+      fail: function (res) {
+        console.log(res.errMsg)
+      }
+    })
+  },
+
+  // 添加新账号，并更新 localStorage
+  addAccount: function (key, user) {
+    let code
+    try {
+      code = GA.calcTOTP(key)
+    } catch (err) {
+      // 密钥格式不符合算法要求
+      this.toast('密钥格式有误')
+      return false
+    }
+
+    this.data.codes.push({
+      key: key,
+      code: code,
+      user: user
+    })
+
+    this.setData({
+      codes: this.data.codes
+    })
+
+    this.setStorage()
+
+    this.toast('身份验证器：密钥已保存')
+
+    return true
   },
 
   // 长按数据项进行相关操作
@@ -121,7 +156,7 @@ Page({
       cur_user: data.user,
       cur_index: index
     })
-    
+
     // 操作选择：编辑（重命名） or 删除
     wx.showActionSheet({
       itemList: ['编辑', '删除'],
@@ -144,8 +179,60 @@ Page({
     })
   },
 
+  // “添加用户名”输入框值同步到 data
+  onuseradd: function (event) {
+    this.setData({
+      input_user: event.detail.value
+    })
+  },
+
+  // “添加密钥”输入框值同步到 data
+  onkeyadd: function (event) {
+    this.setData({
+      input_key: event.detail.value
+    })
+  },
+
+  // 显示“添加”弹窗，输入框获得焦点
+  showAdd: function () {
+    this.setData({
+      show_add: true,
+      focus_add: true
+    })
+  },
+
+  // 隐藏“添加”弹窗
+  hideAdd: function () {
+    this.setData({
+      input_user: '',
+      input_key: '',
+      show_add: false
+    })
+  },
+
+  // 保存新添加的数据
+  confirmAdd: function () {
+    let user = this.data.input_user
+    let key = this.data.input_key
+
+    if (!user) {
+      this.toast('请输入账号名')
+      return
+    }
+
+    if (!key) {
+      this.toast('请输入您的密钥')
+      return
+    }
+
+    if (this.addAccount(key, user)) {
+      this.hideAdd()
+    }
+  },
+
   // 点击数据项，复制对应的验证码（不包含空格）
   copy: function (event) {
+    let _this = this
     let index = event.currentTarget.dataset.index
 
     // 获取当前项对应的验证码，并去掉中间的空格
@@ -155,10 +242,7 @@ Page({
     wx.setClipboardData({
       data: code,
       success: function (res) {
-        wx.showToast({
-          title: '身份验证器：已将验证码复制到剪贴板',
-          icon: 'none'
-        })
+        _this.toast('身份验证器：已将验证码复制到剪贴板')
       }
     })
   },
@@ -236,7 +320,7 @@ Page({
 
     // 将秒数赋值到页面数据 time，实现饼图倒计时效果
     this.setData({ time: seconds })
-    
+
     // 每 1s 回调一次倒计时函数
     setTimeout(this.countdown, 1000)
   },
@@ -282,5 +366,13 @@ Page({
 
     // 匹配失败返回 null
     return null
+  },
+
+  // 不带 icon 的 toast 提示
+  toast: function (msg) {
+    wx.showToast({
+      title: msg,
+      icon: 'none'
+    })
   }
 })

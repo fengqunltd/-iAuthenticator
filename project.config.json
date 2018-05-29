@@ -12,8 +12,8 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.0.8",
-	"appid": "wx9170e88e8efa9b32",
-	"projectname": "authenticator",
+	"appid": "wx7726b73ea8c66534",
+	"projectname": "iAuthenticator",
 	"isGameTourist": false,
 	"condition": {
 		"search": {

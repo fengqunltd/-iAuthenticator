@@ -7,7 +7,7 @@
     </view>
   </view>
 
-  <view class='blank' wx:if='{{codes.length <= 0}}'>
+  <view class='launch' wx:if='{{codes.length <= 0}}'>
     <image class='logo' src='../../images/logo.png'/>
     <view class='p'><text>为您的 Google 账号（或其他账号）开启两步验证后，您需要</text></view>
     <view class='p'>
@@ -18,10 +18,10 @@
       <image class='icon' src='../../images/code.png'/>
       <text>该小程序将为您生成的验证码</text>
     </view>
-    <button class='auth-start' bindtap='onscan'>开始</button>
+    <button class='auth-start' bindtap='onadd'>开始</button>
   </view>
 
-  <button class='auth-add' bindtap='onscan'>+</button>
+  <button class='auth-add' bindtap='onadd'>+</button>
 
   <view class='popup' hidden='{{!show_edit}}'>
     <view class='popup-mask' bindtap='hideEdit'></view>
@@ -53,6 +53,21 @@
       <view class='popup-footer'>
         <button class='popup-button' bindtap='hideDel'>取消</button>
         <button class='popup-button' bindtap='confirmDel'>删除账号</button>
+      </view>
+    </view>
+  </view>
+
+  <view class='popup' hidden='{{!show_add}}'>
+    <view class='popup-mask' bindtap='hideAdd'></view>
+    <view class='popup-content'>
+      <view class='popup-title'>输入账号详情</view>
+      <view class='popup-body'>
+        <input class='popup-input' placeholder='账号名' value='{{input_user}}' focus='{{focus_add}}' bindinput='onuseradd'/>
+        <input class='popup-input' placeholder='您的密钥' value='{{input_key}}' bindinput='onkeyadd'/>
+      </view>
+      <view class='popup-footer' style='margin-top: 30px;'>
+        <text style='float: left; margin-top: 10px; font-size: 12px; color: #666;'>基于时间</text>
+        <button class='popup-button' style='width:92px;border-radius:2px; background:#4285f4; color: #fff;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);' bindtap='confirmAdd'>添加</button>
       </view>
     </view>
   </view>

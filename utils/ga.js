@@ -1,9 +1,6 @@
 const SHA = require('sha.js')
 
-/**
- * addChar
- * 在字符串 str 的 index 位置插入字符串 char
- */
+
 function addChar (str, index, char) {
   str = str.split('')
   str.splice(index, 0, char)
