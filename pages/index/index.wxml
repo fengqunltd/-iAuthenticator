@@ -1,4 +1,5 @@
-<view class='wrap'>
+<!-- 验证码账号列表 -->
+<view class='list'>
   <view class='auth' wx:for='{{codes}}' wx:key='{{item.key}}' bindtap='copy' bindlongpress='onlongpress' data-index='{{index}}'>
     <text class='auth-code'>{{item.code}}</text>
     <view class='weui-flex'>
@@ -6,69 +7,93 @@
       <view class='pie' style='animation-delay: -{{30 - time}}s'>{{(30 - time) / 30 * 100}}%</view>
     </view>
   </view>
+</view>
 
-  <view class='launch' wx:if='{{codes.length <= 0}}'>
-    <image class='logo' src='../../images/logo.png'/>
-    <view class='p'><text>为您的 Google 账号（或其他账号）开启两步验证后，您需要</text></view>
-    <view class='p'>
-      <image class='icon' src='../../images/key.png'/>
-      <text>您的密码</text>
-    </view>
-    <view class='p'>
-      <image class='icon' src='../../images/code.png'/>
-      <text>该小程序将为您生成的验证码</text>
-    </view>
-    <button class='auth-start' bindtap='onadd'>开始</button>
+<!-- 未添加任何账号的状态 -->
+<view class='launch' wx:if='{{codes.length <= 0}}'>
+  <image class='logo' src='../../images/logo.png'/>
+  <view class='p'><text>为您的 Google 账号（或其他账号）开启两步验证后，您需要</text></view>
+  <view class='p'>
+    <image class='icon' src='../../images/key.png'/>
+    <text>您的密码</text>
   </view>
-
-  <button class='auth-add' bindtap='onadd'>+</button>
-
-  <view class='popup' hidden='{{!show_edit}}'>
-    <view class='popup-mask' bindtap='hideEdit'></view>
-    <view class='popup-content'>
-      <view class='popup-title'>重命名</view>
-      <view class='popup-body'>
-        <input class='popup-input' value='{{cur_user}}' focus='{{focus_edit}}' bindinput='oninput' />
-      </view>
-      <view class='popup-footer'>
-        <button class='popup-button' bindtap='hideEdit'>取消</button>
-        <button class='popup-button' bindtap='confirmEdit'>保存</button>
-      </view>
-    </view>
+  <view class='p'>
+    <image class='icon' src='../../images/code.png'/>
+    <text>该小程序将为您生成的验证码</text>
   </view>
+  <button class='auth-start' bindtap='showChoose'>开始</button>
+</view>
 
-  <view class='popup' hidden='{{!show_del}}'>
-    <view class='popup-mask' bindtap='hideDel'></view>
-    <view class='popup-content'>
-      <view class='popup-title weui-flex'>
-        <icon type='warn' size='32' style='margin-right: 10px'></icon>
-        <view class='weui-flex__item'>是否删除 <text class='em'>{{cur_user}}</text> ？</view>
-      </view>
-      <view class='popup-body'>
-        <view class='p'>删除该账号会<text class='em'>导致您无法</text>生成验证码，但<text class='em'>不会</text>关闭双重身份验证。您可能会因此无法登陆自己的账号。</view>
-        <view class='p'>在删除该账号之前，请执行以下操作：</view>
-        <view class='p'>·关闭该账号的两重身份验证功能，或者</view>
-        <view class='p'>·确保您可以通过其他方法生成验证码。</view>
-      </view>
-      <view class='popup-footer'>
-        <button class='popup-button' bindtap='hideDel'>取消</button>
-        <button class='popup-button' bindtap='confirmDel'>删除账号</button>
-      </view>
+<!-- 添加账户按钮 -->
+<button class='auth-add' bindtap='showChoose'>+</button>
+
+<!-- 弹窗：编辑（重命名） -->
+<view class='popup' hidden='{{!show_edit}}'>
+  <view class='popup-mask' bindtap='hideEdit'></view>
+  <view class='popup-content'>
+    <view class='popup-title'>重命名</view>
+    <view class='popup-body'>
+      <input class='popup-input' value='{{cur_user}}' focus='{{focus_edit}}' bindinput='oninput' />
+    </view>
+    <view class='popup-footer'>
+      <button class='popup-button' bindtap='hideEdit'>取消</button>
+      <button class='popup-button' bindtap='confirmEdit'>保存</button>
     </view>
   </view>
+</view>
 
-  <view class='popup' hidden='{{!show_add}}'>
-    <view class='popup-mask' bindtap='hideAdd'></view>
-    <view class='popup-content'>
-      <view class='popup-title'>输入账号详情</view>
-      <view class='popup-body'>
-        <input class='popup-input' placeholder='账号名' value='{{input_user}}' focus='{{focus_add}}' bindinput='onuseradd'/>
-        <input class='popup-input' placeholder='您的密钥' value='{{input_key}}' bindinput='onkeyadd'/>
+<!-- 弹窗：确认是否删除账号 -->
+<view class='popup' hidden='{{!show_del}}'>
+  <view class='popup-mask' bindtap='hideDel'></view>
+  <view class='popup-content'>
+    <view class='popup-title weui-flex'>
+      <icon type='warn' size='32' style='margin-right: 10px'></icon>
+      <view class='weui-flex__item'>是否删除 <text class='em'>{{cur_user}}</text> ？</view>
+    </view>
+    <view class='popup-body'>
+      <view class='p'>删除该账号会<text class='em'>导致您无法</text>生成验证码，但<text class='em'>不会</text>关闭双重身份验证。您可能会因此无法登陆自己的账号。</view>
+      <view class='p'>在删除该账号之前，请执行以下操作：</view>
+      <view class='p'>·关闭该账号的两重身份验证功能，或者</view>
+      <view class='p'>·确保您可以通过其他方法生成验证码。</view>
+    </view>
+    <view class='popup-footer'>
+      <button class='popup-button' bindtap='hideDel'>取消</button>
+      <button class='popup-button' bindtap='confirmDel'>删除账号</button>
+    </view>
+  </view>
+</view>
+
+<!-- 弹窗：选择添加账号的方式 -->
+<view class='popup' hidden='{{!show_choose}}'>
+  <view class='popup-mask' bindtap='hideChoose'></view>
+  <view class='popup-content popup-ways'>
+    <view class='popup-title'>添加账号</view>
+    <view class='popup-body'>
+      <text style='display:block; margin: 10px 0;font-size: 12px;'>您可以选择以下选项之一添加账号：</text>
+      <view class='p' bindtap='scan'>
+        <image class='icon' src='../../images/camera.png'></image>
+        <text>扫描条形码</text>
       </view>
-      <view class='popup-footer' style='margin-top: 30px;'>
-        <text style='float: left; margin-top: 10px; font-size: 12px; color: #666;'>基于时间</text>
-        <button class='popup-button' style='width:92px;border-radius:2px; background:#4285f4; color: #fff;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);' bindtap='confirmAdd'>添加</button>
+      <view class='p' bindtap='showAdd'>
+        <image class='icon' src='../../images/keyboard.png'></image>
+        <text>输入提供的密钥</text>
       </view>
+    </view>
+  </view>
+</view>
+
+<!-- 弹窗：添加账号 -->
+<view class='popup' hidden='{{!show_add}}'>
+  <view class='popup-mask' bindtap='hideAdd'></view>
+  <view class='popup-content'>
+    <view class='popup-title'>输入账号详情</view>
+    <view class='popup-body'>
+      <input class='popup-input' placeholder='账号名' value='{{input_user}}' focus='{{focus_add}}' bindinput='onuseradd'/>
+      <input class='popup-input' placeholder='您的密钥' value='{{input_key}}' bindinput='onkeyadd'/>
+    </view>
+    <view class='popup-footer' style='margin-top: 30px;'>
+      <text style='float: left; margin-top: 10px; font-size: 12px; color: #666;'>基于时间</text>
+      <button class='popup-button' style='width:92px;border-radius:2px; background:#4285f4; color: #fff;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);' bindtap='confirmAdd'>添加</button>
     </view>
   </view>
 </view>

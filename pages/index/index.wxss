@@ -119,7 +119,6 @@ page {
 }
 
 /* popup */
-
 .popup, .popup-mask {
   position: fixed;
   top: 0;
@@ -231,4 +230,17 @@ page {
 
 .auth-start:after {
   display: none;
+}
+
+.popup-ways {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 20px;
+  /* padding-bottom: 10px; */
+}
+
+.popup-ways .p {
+  margin: 0;
+  padding: 10px 0;
 }

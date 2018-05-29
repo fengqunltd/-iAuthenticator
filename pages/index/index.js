@@ -13,6 +13,9 @@ Page({
     // 是否显示“重命名”弹窗
     show_edit: false,
 
+    // 是否显示“选择添加账号方式”弹窗
+    show_choose: false,
+
     // “重命名”弹窗输入框是否获得焦点
     focus_edit: false,
 
@@ -66,6 +69,7 @@ Page({
 
   // 微信扫码添加谷歌验证码
   scan: function () {
+    this.hideChoose()
     wx.scanCode({
       success: (res) => {
         // 如果扫码结果不符合谷歌验证码链接格式，正确格式如下：
@@ -98,21 +102,22 @@ Page({
 
   // 点击“添加”按钮，选择添加账号的方式
   // 扫描条形码 or 输入提供的密钥
-  onadd: function () {
-    let _this = this
-    wx.showActionSheet({
-      itemList: ['扫描条形码', '输入提供的密钥'],
-      success: function (res) {
-        switch (res.tapIndex) {
-          case 0: _this.scan(); break;
-          case 1: _this.showAdd(); break;
-        }
-      },
-      fail: function (res) {
-        console.log(res.errMsg)
-      }
-    })
-  },
+  // onadd: function () {
+  //   this.showChoose()
+  //   // let _this = this
+  //   // wx.showActionSheet({
+  //   //   itemList: ['扫描条形码', '输入提供的密钥'],
+  //   //   success: function (res) {
+  //   //     switch (res.tapIndex) {
+  //   //       case 0: _this.scan(); break;
+  //   //       case 1: _this.showAdd(); break;
+  //   //     }
+  //   //   },
+  //   //   fail: function (res) {
+  //   //     console.log(res.errMsg)
+  //   //   }
+  //   // })
+  // },
 
   // 添加新账号，并更新 localStorage
   addAccount: function (key, user) {
@@ -137,7 +142,7 @@ Page({
 
     this.setStorage()
 
-    this.toast('身份验证器：密钥已保存')
+    this.toast('iAuthenticator：密钥已保存')
 
     return true
   },
@@ -197,7 +202,8 @@ Page({
   showAdd: function () {
     this.setData({
       show_add: true,
-      focus_add: true
+      focus_add: true,
+      show_choose: false
     })
   },
 
@@ -207,6 +213,20 @@ Page({
       input_user: '',
       input_key: '',
       show_add: false
+    })
+  },
+
+  // 显示“选择”弹窗，输入框获得焦点
+  showChoose: function () {
+    this.setData({
+      show_choose: true
+    })
+  },
+
+  // 隐藏“选择”弹窗
+  hideChoose: function () {
+    this.setData({
+      show_choose: false
     })
   },
 
@@ -242,7 +262,7 @@ Page({
     wx.setClipboardData({
       data: code,
       success: function (res) {
-        _this.toast('身份验证器：已将验证码复制到剪贴板')
+        _this.toast('iAuthenticator：验证码已复制')
       }
     })
   },
