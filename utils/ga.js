@@ -1,10 +1,15 @@
 const SHA = require('sha.js')
 
+/**
+ * addChar
+ * 在字符串 str 的 index 位置插入字符串 char
+ */
 function addChar (str, index, char) {
   str = str.split('')
   str.splice(index, 0, char)
   return str.join('')
 }
+
 
 function dec2hex (s) {
   return (s < 15.5 ? '0' : '') + Math.round(s).toString(16)
@@ -41,6 +46,7 @@ function base32tohex (base32) {
   return hex
 }
 
+
 function calcTOTP (base32) {
   let key = base32tohex(base32)
   let epoch = Math.round(new Date().getTime() / 1000.0)
@@ -62,9 +68,5 @@ function calcTOTP (base32) {
 
 
 module.exports = {
-  dec2hex: dec2hex,
-  hex2dec: hex2dec,
-  leftpad: leftpad,
-  base32tohex: base32tohex,
   calcTOTP: calcTOTP
 }

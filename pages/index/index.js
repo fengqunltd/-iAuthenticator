@@ -1,43 +1,30 @@
-//index.js
-//获取应用实例
-const app = getApp()
+// 获取应用实例
+// const APP = getApp()
+
+// 获取谷歌验证算法
 const GA = require('../../utils/ga.js')
 
-// wx.setStorage({
-//   key: "key",
-//   data: [{a:"value"}]
-// })
-
-// wx.getStorage({
-//   key: 'key',
-//   success: function(res) {
-//     console.dir(res.data)
-//   },
-// })
-
+// 注册页面
 Page({
   data: {
-    totp: '',
+    // 验证码刷新倒计时（30s）
     time: 0,
+    // 是否显示“重命名”弹窗
     show_edit: false,
+    // “重命名”弹窗输入框是否获得焦点
     focus_edit: false,
+    // 是否显示“删除确认”弹窗
     show_del: false,
-    cur_name: '',
+    // 当前正在操作（长按）的谷歌验证码的用户名（user）
+    cur_user: '',
+    // 当前正在操作（长按）的谷歌验证码的在数组中的位置
     cur_index: 0,
-    codes: []
+    // 包含所有谷歌验证码的数组，数据格式示例：
     // [
-    //   {
-    //     id: '7476j7vxbf6rzedy',
-    //     code: '337 385',
-    //     name: 'otcbtc.com(hejie@feng-qun.com)'
-    //   },
-    //   {
-    //     id: 'AEL7UIBMCQ2IJUDJ',
-    //     code: '964 852',
-    //     name: 'dubaiex.com-1250682474@qq.com'
-    //   }
+    //   { "key": "7476J7VXBF6RZEDY", "code": "994 889", "user": "Blog" },
+    //   { "key": "QEO4O7SL4XLZ7LUP", "code": "433 066", "user": "candy" }
     // ]
-    // scanResult: null
+    codes: []
   },
 
   onLoad: function () {
@@ -58,45 +45,36 @@ Page({
     let _this = this
     wx.scanCode({
       success: (res) => {
-        // this.setData({
-        //   scanResult: res
+        let key = this.getParam(res.result, 'secret')
+        let user = res.result.split('/').pop().split('?').shift()
+
+        // wx.showModal({
+        //   title: '扫描结果',
+        //   content: res.result + ';' + user,
+        //   showCancel: false,
+        //   confirmColor: '#4285f4'
         // })
 
-
-        let id = this.getQueryString(res.result, 'secret')
-        let name = this.getQueryString(res.result, 'issuer')
-
-        wx.showModal({
-          title: '扫描结果',
-          content: res.result + ';' + name,
-          showCancel: false,
-          confirmColor: '#4285f4'
+        this.data.codes.push({
+          key: key,
+          code: GA.calcTOTP(key),
+          user: user
         })
-
-        let code = {
-          id: id,
-          code: GA.calcTOTP(id),
-          name: name
-        }
-
-        this.data.codes.push(code)
 
         this.setData({
           codes: this.data.codes
         })
 
         this.setStorage()
-        
-        console.log('res', res)
-        console.log('code', code)
+        wx.showToast({
+          title: '身份验证器：密钥已保存',
+          icon: 'none'
+        })
       },
       fail: () => {
-        // this.setData({
-        //   scanResult: null
-        // })
         wx.showToast({
-          icon: 'none',
-          title: '未识别到有效二维码'
+          title: '未识别到有效二维码',
+          icon: 'none'
         })
       }
     })
@@ -107,28 +85,27 @@ Page({
     let index = event.currentTarget.dataset.index
     let data = this.data.codes[index]
     this.setData({
-      cur_name: data.name,
+      cur_user: data.user,
       cur_index: index
     })
-    // console.log(data)
+    
     wx.showActionSheet({
       itemList: ['编辑', '删除'],
       success: function (res) {
-        // console.log(res.tapIndex)
         switch (res.tapIndex) {
           case 0: _this.showEdit(index); break;
           case 1: _this.showDel(index); break;
         }
       },
       fail: function (res) {
-        // console.log(res.errMsg)
+        console.log(res.errMsg)
       }
     })
   },
 
   oninput: function (event) {
     this.setData({
-      cur_name: event.detail.value
+      cur_user: event.detail.value
     })
   },
 
@@ -139,7 +116,7 @@ Page({
       data: data.code.replace(/\s/g, ''),
       success: function (res) {
         wx.showToast({
-          title: '身份验证器：已将验证码复制到剪贴板。',
+          title: '身份验证器：已将验证码复制到剪贴板',
           icon: 'none'
         })
       }
@@ -161,7 +138,7 @@ Page({
 
   confirmEdit: function () {
     let index = this.data.cur_index
-    this.data.codes[index].name = this.data.cur_name
+    this.data.codes[index].user = this.data.cur_user
     this.setData({
       codes: this.data.codes
     })
@@ -201,7 +178,7 @@ Page({
 
   updateTOTP: function () {
     this.data.codes.map((item) => {
-      item.code = GA.calcTOTP(item.id)
+      item.code = GA.calcTOTP(item.key)
     })
     this.setData({
       codes: this.data.codes
@@ -216,9 +193,9 @@ Page({
     })
   },
 
-  getQueryString: function (url, name) {
+  getParam: function (url, name) {
     let reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
-    let str = url.indexOf('?') !== -1 ? url.slice(url.indexOf('?') + 1) : url
+    let str = url.split('?').pop()
     let result = str.match(reg)
     if (result != null) {
       return decodeURIComponent(result[2])
