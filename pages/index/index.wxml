@@ -1,31 +1,33 @@
-<!-- 验证码账号列表 -->
-<view class='list'>
-  <view class='auth' wx:for='{{codes}}' wx:key='{{item.key}}' bindtap='copy' bindlongpress='onlongpress' data-index='{{index}}'>
+<!-- 已添加账号列表 -->
+<view class='auth'>
+  <!-- 验证码账号列表 -->
+  <view class='auth-item' wx:for='{{codes}}' wx:key='{{item.key}}'
+        bindtap='copy' bindlongpress='onlongpress' data-index='{{index}}'>
     <text class='auth-code'>{{item.code}}</text>
-    <view class='weui-flex'>
-      <view class='weui-flex__item auth-account'>{{item.user}}</view>
-      <view class='pie' style='animation-delay: -{{30 - time}}s'>{{(30 - time) / 30 * 100}}%</view>
+    <view class='flex'>
+      <text class='flex-item'>{{item.user}}</text>
+      <text class='pie' style='animation-delay: -{{30 - time}}s'>{{(30 - time) / 30 * 100}}%</text>
     </view>
   </view>
+
+  <!-- 添加账户按钮 -->
+  <button class='auth-add' bindtap='showChoose'>+</button>
 </view>
 
-<!-- 未添加任何账号的状态 -->
+<!-- 未添加任何账号 -->
 <view class='launch' wx:if='{{codes.length <= 0}}'>
-  <image class='logo' src='../../images/logo.png'/>
+  <image class='launch-logo' src='../../images/logo.png'/>
   <view class='p'><text>为您的 Google 账号（或其他账号）开启两步验证后，您需要</text></view>
-  <view class='p'>
+  <view class='flex p'>
     <image class='icon' src='../../images/key.png'/>
-    <text>您的密码</text>
+    <text class='flex-item'>您的密码</text>
   </view>
-  <view class='p'>
+  <view class='flex p'>
     <image class='icon' src='../../images/code.png'/>
-    <text>该小程序将为您生成的验证码</text>
+    <text class='flex-item'>该小程序将为您生成的验证码</text>
   </view>
-  <button class='auth-start' bindtap='showChoose'>开始</button>
+  <button class='btn' style='margin:30px auto;' bindtap='showChoose'>开始</button>
 </view>
-
-<!-- 添加账户按钮 -->
-<button class='auth-add' bindtap='showChoose'>+</button>
 
 <!-- 弹窗：编辑（重命名） -->
 <view class='popup' hidden='{{!show_edit}}'>
@@ -46,9 +48,9 @@
 <view class='popup' hidden='{{!show_del}}'>
   <view class='popup-mask' bindtap='hideDel'></view>
   <view class='popup-content'>
-    <view class='popup-title weui-flex'>
-      <icon type='warn' size='32' style='margin-right: 10px'></icon>
-      <view class='weui-flex__item'>是否删除 <text class='em'>{{cur_user}}</text> ？</view>
+    <view class='popup-title flex'>
+      <icon type='warn' size='32' style='margin-right:10px;'></icon>
+      <view class='flex-item'>是否删除 <text class='em'>{{cur_user}}</text> ？</view>
     </view>
     <view class='popup-body'>
       <view class='p'>删除该账号会<text class='em'>导致您无法</text>生成验证码，但<text class='em'>不会</text>关闭双重身份验证。您可能会因此无法登陆自己的账号。</view>
@@ -63,26 +65,26 @@
   </view>
 </view>
 
-<!-- 弹窗：选择添加账号的方式 -->
+<!-- 弹窗：选择账号添加方式 -->
 <view class='popup' hidden='{{!show_choose}}'>
   <view class='popup-mask' bindtap='hideChoose'></view>
-  <view class='popup-content popup-ways'>
+  <view class='popup-content ways'>
     <view class='popup-title'>添加账号</view>
     <view class='popup-body'>
-      <text style='display:block; margin: 10px 0;font-size: 12px;'>您可以选择以下选项之一添加账号：</text>
-      <view class='p' bindtap='scan'>
+      <view style='margin:10px 0;font-size:12px;'><text>您可以选择以下选项之一添加账号：</text></view>
+      <view class='flex p' bindtap='scan'>
         <image class='icon' src='../../images/camera.png'></image>
-        <text>扫描条形码</text>
+        <text class='flex-item'>扫描条形码</text>
       </view>
-      <view class='p' bindtap='showAdd'>
+      <view class='flex p' bindtap='showAdd'>
         <image class='icon' src='../../images/keyboard.png'></image>
-        <text>输入提供的密钥</text>
+        <text class='flex-item'>输入提供的密钥</text>
       </view>
     </view>
   </view>
 </view>
 
-<!-- 弹窗：添加账号 -->
+<!-- 弹窗：输入密钥添加账号 -->
 <view class='popup' hidden='{{!show_add}}'>
   <view class='popup-mask' bindtap='hideAdd'></view>
   <view class='popup-content'>
@@ -91,9 +93,9 @@
       <input class='popup-input' placeholder='账号名' value='{{input_user}}' focus='{{focus_add}}' bindinput='onuseradd'/>
       <input class='popup-input' placeholder='您的密钥' value='{{input_key}}' bindinput='onkeyadd'/>
     </view>
-    <view class='popup-footer' style='margin-top: 30px;'>
-      <text style='float: left; margin-top: 10px; font-size: 12px; color: #666;'>基于时间</text>
-      <button class='popup-button' style='width:92px;border-radius:2px; background:#4285f4; color: #fff;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);' bindtap='confirmAdd'>添加</button>
+    <view class='popup-footer flex' style='margin-top:30px;'>
+      <text class='flex-item' style='font-size:12px;text-align:left;color:#666;'>基于时间</text>
+      <button class='popup-button btn btn-reverse' bindtap='confirmAdd'>添加</button>
     </view>
   </view>
 </view>

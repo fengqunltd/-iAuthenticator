@@ -1,1 +1,157 @@
+/* =button: 按钮样式重置 */
+button {
+  font-family: inherit;
+}
 
+button:after {
+  display: none;
+}
+
+
+/* =btn */
+.btn {
+  width: 92px;
+  font-size: 14px;
+  line-height: 38px;
+  color: #4285f4;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .25);
+}
+
+.btn-reverse {
+  color: #fff !important;
+  background:#4285f4 !important;
+}
+
+
+/* =flex: 垂直居中布局 */
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.flex-item {
+  flex: 1;
+}
+
+
+/* =icon: 小图标 */
+.icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 20px;
+}
+
+
+/* =em: 重点标注 */
+.em {
+  font-weight: 700;
+}
+
+
+/* =p: 段落 */
+.p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+
+/* =pie: 倒计时饼图 */
+.pie {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  width: 1em;
+  height: 1em;
+  color: transparent;
+  background: #4285f4;
+  border-radius: 50%;
+}
+
+.pie:before,
+.pie:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  background: #fff;
+  border-radius: 0 100% 100% 0 / 50%;
+  transform-origin: left;
+}
+
+.pie:after {
+  background: inherit;
+  animation: pie-spin 15s linear infinite, pie-bg 30s step-end infinite;
+  animation-play-state: paused;
+  animation-delay: inherit;
+}
+
+@keyframes pie-spin { 100% { transform: rotate(.5turn); } }
+
+@keyframes pie-bg { 50% { background: #fff; } }
+
+
+/* =popup: 弹窗 */
+.popup,
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+}
+
+.popup-mask {
+  position: absolute;
+  z-index: 0;
+  background: #000;
+  opacity: .6;
+}
+
+.popup-content {
+  position: relative;
+  z-index: 1;
+  width: 80%;
+  margin: 15vh auto auto;
+  padding: 15px 20px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.popup-title {
+  font-size: 16px;
+}
+
+.popup-body {
+  font-size: 14px;
+  text-align: justify;
+}
+
+.popup-input {
+  height: 2.5em;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #4285f4;
+  font-size: 14px;
+}
+
+.popup-footer {
+  text-align: right;
+}
+
+.popup-button {
+  display: inline-block;
+  margin-left: 5px;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #4285f4;
+  background: #fff;
+}
+
+.popup-button:hover {
+  background: #f8f8f8;
+}

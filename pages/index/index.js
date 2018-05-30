@@ -142,7 +142,7 @@ Page({
 
     this.setStorage()
 
-    this.toast('iAuthenticator：密钥已保存')
+    this.toast('密钥已保存')
 
     return true
   },
@@ -262,7 +262,7 @@ Page({
     wx.setClipboardData({
       data: code,
       success: function (res) {
-        _this.toast('iAuthenticator：验证码已复制')
+        _this.toast('验证码已复制')
       }
     })
   },
