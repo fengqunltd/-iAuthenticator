@@ -6,13 +6,16 @@
     <text class='auth-code'>{{item.code}}</text>
     <view class='flex'>
       <text class='flex-item'>{{item.user}}</text>
-      <text class='pie' style='animation-delay: -{{30 - time}}s'>{{(30 - time) / 30 * 100}}%</text>
+      <image wx:if='{{is_iOS}}' class='pie-canvas' src='{{pie_image}}'></image>
+      <text wx:else class='pie' style='animation-delay: -{{30 - time}}s'></text>
     </view>
   </view>
-
+  
   <!-- 添加账户按钮 -->
   <button class='auth-add' bindtap='showChoose'>+</button>
 </view>
+
+<canvas wx:if='{{is_iOS}}' class='pie-canvas' canvas-id='pie'></canvas>
 
 <!-- 未添加任何账号 -->
 <view class='launch' wx:if='{{codes.length <= 0}}'>

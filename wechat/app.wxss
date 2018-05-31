@@ -102,7 +102,7 @@ button:after {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 4;
+  z-index: 9;
 }
 
 .popup-mask {
@@ -154,4 +154,17 @@ button:after {
 
 .popup-button:hover {
   background: #f8f8f8;
+}
+
+
+/* =pie-canvas */
+.pie-canvas {
+  z-index: 0;
+  width: 14px;
+  height: 14px;
+}
+
+canvas.pie-canvas {
+  position: fixed;
+  left: -20px;
 }

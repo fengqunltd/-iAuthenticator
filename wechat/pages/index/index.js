@@ -7,6 +7,9 @@ const GA = require('../../utils/ga.js')
 // 注册页面
 Page({
   data: {
+    pie_image: '',
+    is_iOS: wx.getSystemInfoSync().system.indexOf('iOS') !== -1,
+
     // 验证码刷新倒计时（30s）
     time: 0,
 
@@ -99,25 +102,6 @@ Page({
       }
     })
   },
-
-  // 点击“添加”按钮，选择添加账号的方式
-  // 扫描条形码 or 输入提供的密钥
-  // onadd: function () {
-  //   this.showChoose()
-  //   // let _this = this
-  //   // wx.showActionSheet({
-  //   //   itemList: ['扫描条形码', '输入提供的密钥'],
-  //   //   success: function (res) {
-  //   //     switch (res.tapIndex) {
-  //   //       case 0: _this.scan(); break;
-  //   //       case 1: _this.showAdd(); break;
-  //   //     }
-  //   //   },
-  //   //   fail: function (res) {
-  //   //     console.log(res.errMsg)
-  //   //   }
-  //   // })
-  // },
 
   // 添加新账号，并更新 localStorage
   addAccount: function (key, user) {
@@ -338,11 +322,47 @@ Page({
     // 每 30s 重新计算一次验证码
     if (epoch % 30 == 0) this.updateTOTP()
 
+    if (this.data.is_iOS && this.data.codes.length > 0) {
+      if (seconds == 30) {
+        this.drawPie(2)
+      } else {
+        this.drawPie((30 - seconds) / 30 * 2)
+      }
+    }
+
     // 将秒数赋值到页面数据 time，实现饼图倒计时效果
     this.setData({ time: seconds })
 
     // 每 1s 回调一次倒计时函数
     setTimeout(this.countdown, 1000)
+  },
+
+  // 绘制 canvas 倒计时饼图
+  drawPie: function (end) {
+    // 范围： -0.5 * PI ~ 1.5 * PI
+    // end: 0 - 2
+    let _this = this
+    // 获取 canvas 对象
+    let context = wx.createCanvasContext('pie')
+    // 设置线条颜色、粗细
+    context.setStrokeStyle('#4285f4')
+    context.beginPath()
+    // 线条宽度为圆形半径的 2 倍，刚好能充满画布，图像由圆环变成整个圆形
+    context.setLineWidth(7)
+    context.arc(7, 7, 3.5, -0.5 * Math.PI, (end - 0.5) * Math.PI, true)
+    context.stroke()
+    context.closePath()
+    context.draw(false, function() {
+      wx.canvasToTempFilePath({
+        canvasId: 'pie',
+        success: function (res) {
+          _this.setData({
+            pie_image: res.tempFilePath
+          })
+          context = null
+        }
+      })
+    })
   },
 
   // 更新验证码数据
